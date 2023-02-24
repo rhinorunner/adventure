@@ -46,19 +46,19 @@ std::vector<Ent> EntVec {};
 namespace Colors
 {
 	RGB_t white  = {255,255,255};
-	RGB_t black  = {0  ,0  ,0  };
-	RGB_t red    = {255,0  ,0  };
-	RGB_t green  = {0  ,255,0  };
+	RGB_t black  = {0  ,0  ,0};
+	RGB_t red    = {255,0  ,0};
+	RGB_t green  = {0  ,255,0};
 	RGB_t blue   = {0  ,0  ,255};
-	RGB_t yellow = {255,255,0  };
+	RGB_t yellow = {255,255,0};
 	RGB_t purple = {255,0  ,255};
 	RGB_t cyan   = {0  ,255,255};
-	
-	std::array<RGB_t, 8> allColors = {
+
+	std::array<RGB_t,8> allColors = {
 		white,black,red,green,blue,yellow,purple,cyan
 	};
 
-	std::array<RGB_t, 8> list = {
+	std::array<RGB_t,8> list = {
 		white,red,green,blue,yellow,purple,cyan
 	};
 };
@@ -74,19 +74,31 @@ std::vector<std::pair<char,RGB_t>> pixelMapKey {
 	{'b', Colors::black }
 };
 
-namespace Sprites 
+namespace Sprites
 {
-	PixelMapChar test = {
-		{'B','B','b','b','Y','R','Y','R','Y','G'},
-		{'B','B','b','b','Y','R','Y','R','Y','G'},
-		{'B','B','b','b','Y','R','Y','R','Y','G'},
-		{'B','B','b','b','G','G','G','G','G','G'},
-		{'B','B','b','b','G','G','G','G','G','G'},
-		{'B','b','b','b','C','P','P','W','W','W'},
-		{'B','b','b','b','C','P','P','W','W','W'},
-		{'B','b','b','b','C','P','P','W','W','W'},
-		{'B','b','b','b','C','P','P','W','W','W'},
-		{'B','b','b','b','C','P','P','W','W','W'},
+	PixelMapChar RED = {
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'},
+		{'R','R','R','R','R','R','R','R','R','R'}
+	};
+	PixelMapChar GREEN = {
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'},
+		{'G','G','G','G','G','G','G','G','G','G'}
 	};
 }
 
@@ -107,18 +119,18 @@ class BetterRand {
 public:
 	// adds this to random each time, optional
 	int32_t extraRand;
-	BetterRand(const int32_t &ExtraRand = 0) : extraRand(ExtraRand){};
+	BetterRand(const int32_t& ExtraRand = 0) : extraRand(ExtraRand) {};
 	uint32_t genRand(
-		const int32_t &extra = 4, 
-		bool resetExtraRand = true, 
+		const int32_t& extra = 2,
+		bool resetExtraRand = true,
 		int32_t resetERextraIt = 2
 	) {
 		if (resetExtraRand)
-		  extraRand = genRand(resetERextraIt, false);
-		// set random to unix time
+			extraRand = genRand(resetERextraIt,false);
+		  // set random to unix time
 		auto cool = std::chrono::system_clock::now();
 		auto very =
-		    (unsigned int)
+			(unsigned int)
 			std::chrono::time_point_cast<std::chrono::milliseconds>
 			(cool).time_since_epoch().count();
 		// add random()
@@ -129,10 +141,10 @@ public:
 			very += __LINE__;
 		// add an iteration (extra = 2)
 		if (extra >= 3)
-			very += genRand(2, false);
+			very += genRand(2,false);
 		// bitshift right or left based on another iteration
 		if (extra >= 4)
-			(genRand(2, false)) % 2 ? very >>= 1 : very <<= 1;
+			(genRand(2,false)) % 2 ? very >>= 1 : very <<= 1;
 		// subtract an iteration (extra = 4)		
 		return (very + extraRand);
 	}
@@ -147,14 +159,14 @@ void uSDL_SETUP()
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		exit(1);
 	}
-	SDL_CreateWindowAndRenderer(A_SCREENWIDTH, A_SCREENHEIGHT, 0, &A_WINDOW, &A_RENDERER);
+	SDL_CreateWindowAndRenderer(A_SCREENWIDTH,A_SCREENHEIGHT,0,&A_WINDOW,&A_RENDERER);
 	if (A_WINDOW == NULL) {
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		exit(1);
 	}
 
 	// set background color
-	SDL_SetRenderDrawColor(A_RENDERER, A_BACKCOLOR.R, A_BACKCOLOR.G, A_BACKCOLOR.B, 255);
+	SDL_SetRenderDrawColor(A_RENDERER,A_BACKCOLOR.R,A_BACKCOLOR.G,A_BACKCOLOR.B,255);
 	SDL_RenderClear(A_RENDERER);
 }
 

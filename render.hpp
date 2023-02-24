@@ -11,7 +11,7 @@ float distance(
 	const std::pair<uint16_t, uint16_t>& coords1,
 	const std::pair<uint16_t, uint16_t>& coords2
 ) {
-	return sqrt(
+	return (float)sqrt(
 		pow(coords1.first - coords2.first, 2) +
 		pow(coords1.second - coords2.second, 2)
 	);
@@ -103,24 +103,43 @@ public:
 };
 
 class Ent {
-private:
-	uint16_t Width, Height, X, Y;
-	PixelMap Sprite {};
-
 public: 
+	uint16_t Width, Height, X, Y, ID;
+	float Velocity, Angle;
+	PixelMap Sprite {};
 
 	Ent(
 		const uint16_t& width,
 		const uint16_t& height,
 		const uint16_t& x,
 		const uint16_t& y,
+		const float& angle,
+		const float& velocity,
+		const uint16_t& id,
 		PixelMap pmap = {}
-	) : Width(width), Height(height), X(x), Y(y), Sprite(pmap) {}
+	) : 
+		Width(width),
+		Height(height),
+		X(x),
+		Y(y),
+		Angle(angle),
+		Velocity(velocity),
+		ID(id),
+		Sprite(pmap)
+	{}
 
-	void setSprite(const PixelMap& pmap) {
-		Sprite = pmap;
+	// check if ent is colliding with another ent
+	bool isColliding(Ent& other) {
+		if (
+			   X < (other.X + other.Width)
+			&& (X + Width) > other.X
+			&& Y < (other.Y + other.Height)
+			&& (Y + Height) > other.Y
+			) return true;
+		
+		return false;
 	}
-
+	
 	// blit the sprite
 	void blitSprite(SDL_Renderer* renderer) {
 		for (uint16_t i = 0; i < Sprite.size(); ++i) {
