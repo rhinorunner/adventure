@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
+#include <chrono>
 #include <SDL.h>
 
 #pragma pack(1)
@@ -31,11 +33,15 @@ static constexpr RGB_t A_BACKCOLOR {0,0,0};
 
 /************************************************/
 
+typedef std::vector<std::vector<RGB_t>> PixelMap;
+typedef std::vector<std::vector<char>> PixelMapChar;
+
 static SDL_Window* A_WINDOW;
 static SDL_Renderer* A_RENDERER;
 
-typedef std::vector<std::vector<RGB_t>> PixelMap;
-typedef std::vector<std::vector<char>> PixelMapChar;
+#include "render.hpp"
+
+std::vector<Ent> EntVec {};
 
 namespace Colors
 {
@@ -47,7 +53,7 @@ namespace Colors
 	RGB_t yellow = {255,255,0  };
 	RGB_t purple = {255,0  ,255};
 	RGB_t cyan   = {0  ,255,255};
-
+	
 	std::array<RGB_t, 8> allColors = {
 		white,black,red,green,blue,yellow,purple,cyan
 	};
@@ -71,21 +77,66 @@ std::vector<std::pair<char,RGB_t>> pixelMapKey {
 namespace Sprites 
 {
 	PixelMapChar test = {
-		{'W','W','G','G','G'},
-		{'W','W','G','G','G'},
-		{'W','W','R','R','R'},
-		{'W','W','R','R','R'},
-		{'W','W','R','R','R'}
+		{'B','B','b','b','Y','R','Y','R','Y','G'},
+		{'B','B','b','b','Y','R','Y','R','Y','G'},
+		{'B','B','b','b','Y','R','Y','R','Y','G'},
+		{'B','B','b','b','G','G','G','G','G','G'},
+		{'B','B','b','b','G','G','G','G','G','G'},
+		{'B','b','b','b','C','P','P','W','W','W'},
+		{'B','b','b','b','C','P','P','W','W','W'},
+		{'B','b','b','b','C','P','P','W','W','W'},
+		{'B','b','b','b','C','P','P','W','W','W'},
+		{'B','b','b','b','C','P','P','W','W','W'},
 	};
 }
 
 PixelMap pmcToPm(const PixelMapChar& pmc) {
 	PixelMap toReturn {};
-	for (auto& x : pmc) 
-		for (auto& y : x) 
+	std::vector<RGB_t> temp {};
+	for (auto& x : pmc) {
+		temp = {};
+		for (auto& y : x)
 			for (auto& z : pixelMapKey)
-				if (z.first == y) toReturn.push_back(z.second);
+				if (z.first == y) temp.push_back(z.second);
+		toReturn.push_back(temp);
+	}
+	return toReturn;
 }
+
+class BetterRand {
+public:
+	// adds this to random each time, optional
+	int32_t extraRand;
+	BetterRand(const int32_t &ExtraRand = 0) : extraRand(ExtraRand){};
+	uint32_t genRand(
+		const int32_t &extra = 4, 
+		bool resetExtraRand = true, 
+		int32_t resetERextraIt = 2
+	) {
+		if (resetExtraRand)
+		  extraRand = genRand(resetERextraIt, false);
+		// set random to unix time
+		auto cool = std::chrono::system_clock::now();
+		auto very =
+		    (unsigned int)
+			std::chrono::time_point_cast<std::chrono::milliseconds>
+			(cool).time_since_epoch().count();
+		// add random()
+		if (extra >= 1)
+			very -= rand();
+		// add line number
+		if (extra >= 2)
+			very += __LINE__;
+		// add an iteration (extra = 2)
+		if (extra >= 3)
+			very += genRand(2, false);
+		// bitshift right or left based on another iteration
+		if (extra >= 4)
+			(genRand(2, false)) % 2 ? very >>= 1 : very <<= 1;
+		// subtract an iteration (extra = 4)		
+		return (very + extraRand);
+	}
+};
 
 
 void uSDL_SETUP()
