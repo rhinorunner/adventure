@@ -5,7 +5,6 @@
 #include <vector>
 #include <array>
 #include <SDL.h>
-
 #include "lib.hpp"
 
 float distance(
